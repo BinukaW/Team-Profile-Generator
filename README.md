@@ -23,7 +23,7 @@ node index.js
 
 ![Screenshot1](https://github.com/BinukaW/Team-Profile-Generator/blob/main/images/Screenshot1.png)
 
-![Screenshot2](C:\Users\binuk\BCHomework\Team-Profile-Generator\images\Screenshot2.png)
+![Screenshot2](https://github.com/BinukaW/Team-Profile-Generator/blob/main/images/Screenshot2.png)
 
 ### Contribution
 undefined
