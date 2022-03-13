@@ -1,154 +1,205 @@
 const inquirer = require('inquirer');
+const fs = require('fs'); 
+
 const Manager = require('./lib/Manager');
-const Engineer = require('./lib/Engineer')
-const Intern = require('./lib/Intern')
-const fs = require('fs');
-const generateTeam = require('./src/teamGenerate.js');
+const Engineer = require('./lib/Engineer');
+const Intern = require('./lib/Intern'); 
+
+const generateHTML = require('./src/teamGenerate');
 
 
-team = [];
-const managerQuestions = () => {
-    inquirer.prompt([
+const generateTeam = []; 
+
+const addManager = () => {
+    return inquirer.prompt ([
         {
-            type: 'input',
-            name: 'name',
-            message: 'What is the team manager\'s name?',
+            type: "input",
+            name: "name",
+            message: "Please enter Manager's FULL name", 
         },
         {
-            type: 'input',
-            name: 'id',
-            message: 'What is the team manager\'s id?',
+            type: "input",
+            name: "email",
+            message: "Please enter the manager's email address.",
+            validate: email => {
+                valid = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)
+                if (valid) {
+                    return true;
+                } else {
+                    console.log ('Please enter a valid email address!')
+                    return false; 
+                }
+            }
         },
         {
-            type: 'input',
-            name: 'email',
-            message: 'What is the team manager\'s email?',
+            type: "input",
+            name: "id",
+            message: "Please enter the manager's ID.",
+                   validate: nameInput => {
+                if  (isNaN(nameInput)) {
+                    console.log ("Please enter valid ID number!")
+                    return false; 
+                } else {
+                    return true;
+                }
+            }
         },
         {
-            type: 'input',
-            name: 'officeNumber',
-            message: 'What is the team manager\'s office number?',
-        },
-        {
-            type: 'list',
-            name: 'addMember',
-            message: 'What type of team member would you like to add?',
-            choices: ['Engineer', 'Intern', 'I don\'t want to add any more team members'],
+            type: "input",
+            name: "officeNumber",
+            message: "Please enter the manager's office number",
+            validate: nameInput => {
+                if  (isNaN(nameInput)) {
+                    console.log ('Please enter a valid number!')
+                    return false; 
+                } else {
+                    return true;
+                }
+            }
         }
     ])
-    .then((managerAnswers) => {
-    
-        const manager = new Manager(managerAnswers.id, managerAnswers.name, managerAnswers.email, managerAnswers.officeNumber)
-        team.push(manager)
-        switch(managerAnswers.addMember) {
-            case 'Engineer':
-                engineerQuestions();
-                break;
-            case 'Intern':
-                internQuestions();
-                break;
-            default: 
-            writeToFile('./dist/index.html', generateTeam(team))
-        }
-    });
-};
+    .then(managerInput => {
+        const  { name, email, id, officeNumber } = managerInput; 
+        const manager = new Manager (name, email, id, officeNumber);
 
-const engineerQuestions = () => {
-    inquirer.prompt([
-        {
-            type: 'input',
-            name: 'name',
-            message: 'What is the engineer\'s name?',
-        },
-        {
-            type: 'input',
-            name: 'id',
-            message: 'What is the engineer\'s id?',
-        },
-        {
-            type: 'input',
-            name: 'email',
-            message: 'What is the engineer\'s email address?',
-        },
-        {
-            type: 'input',
-            name: 'github',
-            message: 'What is the engineer\'s GitHub username?',
-        },
-        {
-            type: 'list',
-            name: 'addMember',
-            message: 'What type of team member would you like to add next?',
-            choices: ['Engineer', 'Intern', 'I don\'t want to add any more team members'],
-        }
-    ])
-    .then((engineerAnswers) => {
-        const engineer = new Engineer(engineerAnswers.id, engineerAnswers.name, engineerAnswers.email, engineerAnswers.github)
-        team.push(engineer)
-        switch(engineerAnswers.addMember) {
-            case 'Engineer':
-                engineerQuestions();
-                break;
-            case 'Intern':
-                internQuestions();
-                break;
-            default: 
-            writeToFile('./dist/index.html', generateTeam(team))
-        }
+        generateTeam.push(manager); 
+        console.log(manager); 
     })
 };
 
-const internQuestions = () => {
-    inquirer.prompt([
+const addEmployee = () => {
+    console.log(`
+    =================
+    Adding team members
+    =================
+    `);
+
+    return inquirer.prompt ([
         {
-            type: 'input',
-            name: 'name',
-            message: 'What is the intern\'s name?'
+            type: "list",
+            name: "role",
+            message: "Select an employee role to add into the team",
+            choices: ['Engineer', 'Intern']
         },
         {
-            type: 'input',
-            name: 'id',
-            message: 'What is the intern\'s id?'
+            type: "input",
+            name: "name",
+            message: "Please enter employee name", 
+            validate: nameInput => {
+                if (nameInput) {
+                    return true;
+                } else {
+                    console.log ("Please enter an employee's  FULL name!");
+                    return false; 
+                }
+            }
         },
         {
-            type: 'input',
-            name: 'email',
-            message: 'What is the intern\'s email address?'
+            type: "input",
+            name: "email",
+            message: "Please enter the employee's email address.",
+            validate: email => {
+                valid = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)
+                if (valid) {
+                    return true;
+                } else {
+                    console.log ('Please enter a valid email address!')
+                    return false; 
+                }
+            }
         },
         {
-            type: 'input',
-            name: 'school',
-            message: 'What is the intern\'s school?'
+            type: "input",
+            name: "id",
+            message: "Please enter the employee's ID.",
+            validate: nameInput => {
+                if  (isNaN(nameInput)) {
+                    console.log ("Please enter a valid employee's ID!")
+                    return false; 
+                } else {
+                    return true;
+                }
+            }
+        },   
+        {
+            type: "input",
+            name: "github",
+            message: "Please enter employee's github username.",
+            when: (input) => input.role === "Engineer",
+            validate: nameInput => {
+                if (nameInput ) {
+                    return true;
+                } else {
+                    console.log ("Please enter valid github username!")
+                }
+            }
         },
         {
-            type: 'list',
-            name: 'addMember',
-            message: 'What type of team member would you like to add next?',
-            choices: ['Engineer', 'Intern', 'I don\'t want to add any more team members'],
+            type: "input",
+            name: "school",
+            message: "Please enter the intern's school",
+            when: (input) => input.role === "Intern",
+            validate: nameInput => {
+                if (nameInput) {
+                    return true;
+                } else {
+                    console.log ("Please enter the name of the school!")
+                }
+            }
+        },
+        {
+            type: "confirm",
+            name: "confirmAddEmployee",
+            message: "Would you like to add more team members?",
+            default: false
         }
     ])
-    .then((internAnswers) => {
-        const intern = new Intern(internAnswers.id, internAnswers.name, internAnswers.email, internAnswers.school)
-        team.push(intern)
-        switch(internAnswers.addMember){
-            case 'Engineer':
-                engineerQuestions();
-                break;
-            case 'Intern':
-                internQuestions();
-                break;
-            default:
-                writeToFile('./dist/index.html', generateTeam(team))
+    .then(employeeData => {
+
+        let { name, email, id, role, github, school, confirmAddEmployee } = employeeData; 
+        let employee; 
+
+        if (role === "Engineer") {
+            employee = new Engineer (name, email, id, github);
+
+            console.log(employee);
+
+        } else if (role === "Intern") {
+            employee = new Intern (name, email, id, school);
+
+            console.log(employee);
+        }
+
+        generateTeam.push(employee); 
+
+        if (confirmAddEmployee) {
+            return addEmployee(generateTeam); 
+        } else {
+            return generateTeam;
         }
     })
-}
 
-managerQuestions();
-
-
-function writeToFile(filename, data) {
-    fs.writeFile(filename, data, (err) => {
-        if(err) throw err;
-        console.log('file saved')
-    });
 };
+
+const writeFile = data => {
+    fs.writeFile('./dist/index.html', data, err => {
+        if (err) {
+            console.log(err);
+            return;
+        } else {
+            console.log("You have successfully created your team profile. Please refer to index.html page to view it!")
+        }
+    })
+}; 
+
+addManager()
+  .then(addEmployee)
+  .then(generateTeam => {
+    return generateHTML(generateTeam);
+  })
+  .then(pageHTML => {
+    return writeFile(pageHTML);
+  })
+  .catch(err => {
+ console.log(err);
+  });
